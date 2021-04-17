@@ -6,6 +6,7 @@ import Toast from "react-bootstrap/Toast";
 import { Queue } from '@datastructures-js/queue';
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button"
+import { Card } from 'react-bootstrap';
 
 function App(props, _children) {
     var [faceUp, flip] = React.useState([])
@@ -17,15 +18,26 @@ function App(props, _children) {
     var [cnt, setCnt] = React.useState(0)
     var updQueue = React.useRef(new Queue())
     var [matchPairCount, setMatchPairCount] = React.useState(0)
+    var [scores, setScores] = React.useState([])
+    var [turn, setTurn] = React.useState(0)
+    var [bonus, setBonus] = React.useState(1)
     var {opts, setPlayin} = props
- 
+    
+
     React.useEffect(() => {
-        var faceUp_init = Array.from('x'.repeat(opts.n_pairs * 2), (g)=>false)
+        var faceUp_init = Array.from('x'.repeat(opts.n_pairs * 2), (_g)=>false)
         flip(faceUp_init)
-        var cardLocked_init = Array.from('x'.repeat(opts.n_pairs * 2), (g)=>false)
+        var cardLocked_init = Array.from('x'.repeat(opts.n_pairs * 2), (_g)=>false)
         setCardLock(cardLocked_init)
         console.log("effect executed once")
-    },[opts.n_pairs])
+
+        var players_init = Array.from('x'.repeat(opts.n_players), (_g)=>0)
+        setScores(players_init)
+    },[opts.n_pairs, opts.n_players])
+
+    React.useEffect(() => {
+        setBonus(1)
+    }, [turn])
 
     React.useEffect(()=>{
         console.log("setFaceUp faceUp  = " + faceUp)
@@ -34,12 +46,6 @@ function App(props, _children) {
         execFaceUpQu(act[0], act[1])
         setCnt(cnt + 1)
     }, [faceUp, cnt])
-
-    // React.useEffect(() =>{
-    //     if(matchPairCount >= opts.n_pairs){
-    //         setPlayin(false)
-    //     }
-    // }, [matchPairCount])
 
     var faceDownImg = "logo512.png"
     var imgs = []
@@ -52,8 +58,14 @@ function App(props, _children) {
 
     function right_matched(x, y){
         var new_card_lock = []
+        var new_scores = []
         setShowRight(true)
         setMatchPairCount(matchPairCount + 1)
+
+        new_scores = [...scores]
+        new_scores[turn] += bonus
+        setBonus(bonus + 1)
+        setScores(new_scores)
         for(var i = 0; i < cardLocked.length; i++){
             if((!cardLocked[i]) && (i === x || i === y)){
                 new_card_lock.push(true)
@@ -80,6 +92,7 @@ function App(props, _children) {
             setFaceUp(y, false)
             console.log(faceUp)
             console.log("timeout wrong match")
+            setTurn((turn + 1) % opts.n_players)
         }, 1000)
     }
 
@@ -124,8 +137,36 @@ function App(props, _children) {
         setCnt(cnt + 1)
     }
 
+    function getWinner(){
+        
+        try{
+            var maxScore = 0
+            for(var i = 0 ; i < scores.length; i++){
+                if(scores[i] > scores[maxScore]){
+                    maxScore = i
+                }
+            }
+            return `${opts.playerName[maxScore]} Wins!!`;
+        } catch (ex) {
+            return "no winner yet"
+        }
+    }
     return (
         <div className = "container-fluid">
+            <div className = "row">
+                <div className = "col-lg-3 col-sm-12">Current Turn: Player {turn + 1}</div>
+                <div className = "col-lg-9 col-sm-12">
+                    {scores.map((val, i) => (
+                        <Card key = {i}>
+                            <Card.Header>Player {i + 1}</Card.Header>
+                            <Card.Body>
+                                <Card.Text>{val}</Card.Text>
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+                
+            </div>
             <div className = "row d-flex flex-row">
                 {imgs.map((val, i) => (
                     <GameCard key = {i} k = {i} flip_card = {picked} src = {(isFaceUp(i)?val:faceDownImg)} />
@@ -135,7 +176,7 @@ function App(props, _children) {
                 <RightToast show = {showRight} onClose = {(e) => setShowRight(false)}/>
                 <WrongToast show = {showWrong} onClose = {(e) => setShowWrong(false)}/>
             </div>
-            <GameOverModal show = {matchPairCount >= opts.n_pairs} onHide = {(e) => setPlayin(false)} winner = "Player 1"/>
+            <GameOverModal show = {matchPairCount >= opts.n_pairs} onHide = {(e) => setPlayin(false)} winner_text = {getWinner()}/>
         </div>
     )
 }
@@ -171,7 +212,7 @@ function WrongToast(props, _children){
 }
 
 function GameOverModal(props, _children){
-    var {show, onHide, winner} = props
+    var {show, onHide, winner_text} = props
     return(
         <Modal
             show={show}
@@ -183,7 +224,7 @@ function GameOverModal(props, _children){
                 <Modal.Title>Game Over</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {winner} Wins!
+                {winner_text}
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={onHide}>

@@ -14,7 +14,8 @@ function App() {
   var [playin, setPlayin] = React.useState(false)
   var opts = React.useRef({
     n_players : 2,
-    n_pairs : 3
+    n_pairs : 3,
+    playerName : ["Amor", "Dimpi"]
   })
   return (
     <div className="App">
