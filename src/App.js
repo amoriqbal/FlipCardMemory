@@ -8,16 +8,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import FlipGame from './FlipGame';
 
 function App() {
-  var play_states = {
-    HOME : "HOME",
-    PLAY : "PLAY",
-    OVER : "OVER"
-  }
-
   var playButtonClicked = e => {
-    setPlayin(play_states.PLAY)
+    setPlayin(true)
   }
-  var [playin, setPlayin] = React.useState(play_states.HOME)
+  var [playin, setPlayin] = React.useState(false)
   var opts = React.useRef({
     n_players : 2,
     n_pairs : 3
@@ -29,10 +23,10 @@ function App() {
       </header>
       <Container>
         <Row>
-      {playin && playin === play_states.HOME && (
+      {playin !== undefined && playin === false && (
           <Button id = "play-button" onClick = {playButtonClicked}> PLAY </Button>
       )}
-      {playin && playin === play_states.PLAY &&
+      {playin &&
           <FlipGame opts = {opts.current} setPlayin = {setPlayin}/>
       }
       </Row>

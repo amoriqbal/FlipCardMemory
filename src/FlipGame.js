@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './FlipGame.css';
 import Toast from "react-bootstrap/Toast";
 import { Queue } from '@datastructures-js/queue';
+import Modal from "react-bootstrap/Modal";
+import Button from "react-bootstrap/Button"
 
 function App(props, _children) {
     var [faceUp, flip] = React.useState([])
@@ -14,6 +16,7 @@ function App(props, _children) {
     var [showRight, setShowRight] = React.useState(false)
     var [cnt, setCnt] = React.useState(0)
     var updQueue = React.useRef(new Queue())
+    var [matchPairCount, setMatchPairCount] = React.useState(0)
     var {opts, setPlayin} = props
  
     React.useEffect(() => {
@@ -24,7 +27,6 @@ function App(props, _children) {
         console.log("effect executed once")
     },[opts.n_pairs])
 
-
     React.useEffect(()=>{
         console.log("setFaceUp faceUp  = " + faceUp)
         if(updQueue.current.isEmpty()) return
@@ -32,6 +34,12 @@ function App(props, _children) {
         execFaceUpQu(act[0], act[1])
         setCnt(cnt + 1)
     }, [faceUp, cnt])
+
+    // React.useEffect(() =>{
+    //     if(matchPairCount >= opts.n_pairs){
+    //         setPlayin(false)
+    //     }
+    // }, [matchPairCount])
 
     var faceDownImg = "logo512.png"
     var imgs = []
@@ -45,6 +53,7 @@ function App(props, _children) {
     function right_matched(x, y){
         var new_card_lock = []
         setShowRight(true)
+        setMatchPairCount(matchPairCount + 1)
         for(var i = 0; i < cardLocked.length; i++){
             if((!cardLocked[i]) && (i === x || i === y)){
                 new_card_lock.push(true)
@@ -104,9 +113,6 @@ function App(props, _children) {
             }
             new_arr[i] = d
             flip(new_arr)
-            // console.log("setFaceUp done " + i.toString() + " " + d.toString())
-            // console.log("setFaceUp new_arr = " + new_arr)
-            // console.log("setFaceUp faceUp  = " + faceUp)
             return true
         }
         console.log("setFaceUp failed " + i.toString() + " " + d.toString())
@@ -117,18 +123,19 @@ function App(props, _children) {
         updQueue.current.enqueue([i,d])
         setCnt(cnt + 1)
     }
+
     return (
         <div className = "container-fluid">
             <div className = "row d-flex flex-row">
                 {imgs.map((val, i) => (
                     <GameCard key = {i} k = {i} flip_card = {picked} src = {(isFaceUp(i)?val:faceDownImg)} />
-                    
                 ))}
             </div>
             <div className = "row d-flex">
                 <RightToast show = {showRight} onClose = {(e) => setShowRight(false)}/>
                 <WrongToast show = {showWrong} onClose = {(e) => setShowWrong(false)}/>
             </div>
+            <GameOverModal show = {matchPairCount >= opts.n_pairs} onHide = {(e) => setPlayin(false)} winner = "Player 1"/>
         </div>
     )
 }
@@ -160,6 +167,30 @@ function WrongToast(props, _children){
         <Toast show = {show} onClose = {onClose}>
             <Toast.Header> Nope! </Toast.Header>
         </Toast>
+    )
+}
+
+function GameOverModal(props, _children){
+    var {show, onHide, winner} = props
+    return(
+        <Modal
+            show={show}
+            onHide={onHide}
+            backdrop="static"
+            keyboard={false}
+        >
+            <Modal.Header closeButton>
+                <Modal.Title>Game Over</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {winner} Wins!
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" onClick={onHide}>
+                    MainMenu
+                </Button>
+            </Modal.Footer>
+        </Modal>
     )
 }
 export default App;
