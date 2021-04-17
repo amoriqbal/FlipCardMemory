@@ -3,6 +3,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './FlipGame.css';
 import Toast from "react-bootstrap/Toast";
+import { Queue } from '@datastructures-js/queue';
 
 function App(props, _children) {
     var [faceUp, flip] = React.useState([])
@@ -11,9 +12,10 @@ function App(props, _children) {
     var [cardLocked, setCardLock] = React.useState([])
     var [showWrong, setShowWrong] = React.useState(false)
     var [showRight, setShowRight] = React.useState(false)
-
-
+    var [cnt, setCnt] = React.useState(0)
+    var updQueue = React.useRef(new Queue())
     var {opts, setPlayin} = props
+ 
     React.useEffect(() => {
         var faceUp_init = Array.from('x'.repeat(opts.n_pairs * 2), (g)=>false)
         flip(faceUp_init)
@@ -21,6 +23,15 @@ function App(props, _children) {
         setCardLock(cardLocked_init)
         console.log("effect executed once")
     },[opts.n_pairs])
+
+
+    React.useEffect(()=>{
+        console.log("setFaceUp faceUp  = " + faceUp)
+        if(updQueue.current.isEmpty()) return
+        var act = updQueue.current.dequeue()
+        execFaceUpQu(act[0], act[1])
+        setCnt(cnt + 1)
+    }, [faceUp, cnt])
 
     var faceDownImg = "logo512.png"
     var imgs = []
@@ -82,7 +93,7 @@ function App(props, _children) {
         }
     }
 
-    function setFaceUp(i, d){
+    function execFaceUpQu(i, d){
         if(boardLocked || cardLocked[i]) {
             console.log("setFaceUp locked " + i.toString() + " " + d.toString())
         }
@@ -93,15 +104,19 @@ function App(props, _children) {
             }
             new_arr[i] = d
             flip(new_arr)
-            console.log("setFaceUp done " + i.toString() + " " + d.toString())
-            console.log("setFaceUp new_arr = " + new_arr)
-            console.log("setFaceUp faceUp  = " + faceUp)
+            // console.log("setFaceUp done " + i.toString() + " " + d.toString())
+            // console.log("setFaceUp new_arr = " + new_arr)
+            // console.log("setFaceUp faceUp  = " + faceUp)
             return true
         }
         console.log("setFaceUp failed " + i.toString() + " " + d.toString())
         return false
     }
 
+    function setFaceUp(i, d){
+        updQueue.current.enqueue([i,d])
+        setCnt(cnt + 1)
+    }
     return (
         <div className = "container-fluid">
             <div className = "row d-flex flex-row">
