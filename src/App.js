@@ -30,7 +30,7 @@ function App() {
       <Container>
         <Row>
       {playin && playin === play_states.HOME && (
-          <Button onClick = {playButtonClicked}></Button>
+          <Button id = "play-button" onClick = {playButtonClicked}> PLAY </Button>
       )}
       {playin && playin === play_states.PLAY &&
           <FlipGame opts = {opts.current} setPlayin = {setPlayin}/>
