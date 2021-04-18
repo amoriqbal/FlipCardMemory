@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import FlipGame from './FlipGame';
+import RulesCarousel from './RulesCarousel'
 
 function App() {
   var playButtonClicked = e => {
@@ -20,17 +21,25 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h2>Memory Flip!</h2>
+        <h1>Memory Flip!</h1>
       </header>
       <Container>
-        <Row>
-      {playin !== undefined && playin === false && (
-          <Button id = "play-button" onClick = {playButtonClicked}> PLAY </Button>
-      )}
-      {playin &&
-          <FlipGame opts = {opts.current} setPlayin = {setPlayin}/>
-      }
-      </Row>
+        {playin !== undefined && playin === false && (<>
+          <Row>
+            <div className = "col-12">
+              <RulesCarousel/>
+            </div>
+          </Row>
+          <Row>
+            <div className = "col-12">
+              <Button id = "play-button" onClick = {playButtonClicked}> <h2><strong>PLAY</strong></h2> </Button>
+              
+            </div>
+          </Row>
+        </>)}
+        {playin &&
+            <FlipGame opts = {opts.current} setPlayin = {setPlayin}/>
+        }
       </Container>
       
     </div>

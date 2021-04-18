@@ -8,4 +8,18 @@
     margin-bottom: 20px;
     
 }
-    
+
+.turn-indicator{
+    border-radius: 1rem;
+    border-color: darkorange;
+    background-color: darkorchid;
+    color: azure;
+    border-style: solid;
+    border-width: 8px;
+}
+
+.not-turn{
+    border-radius: 1rem;
+    border-style: double;
+    border-width: 8px;
+}

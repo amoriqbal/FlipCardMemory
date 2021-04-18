@@ -154,16 +154,26 @@ function App(props, _children) {
     return (
         <div className = "container-fluid">
             <div className = "row">
-                <div className = "col-lg-3 col-sm-12">Current Turn: Player {turn + 1}</div>
+                    
+                <div className = "col-lg-3 col-sm-12">
+                    <Card>
+                        <Card.Header><h3>Current Turn: </h3></Card.Header>
+                        <Card.Body>
+                            <Card.Text><h2>{opts.playerName[turn]}</h2></Card.Text>
+                        </Card.Body>
+                    </Card>
+                </div>
                 <div className = "col-lg-9 col-sm-12">
-                    {scores.map((val, i) => (
-                        <Card key = {i}>
-                            <Card.Header>Player {i + 1}</Card.Header>
-                            <Card.Body>
-                                <Card.Text>{val}</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    ))}
+                    <div className = "d-flex flex-row">
+                        {scores.map((val, i) => (
+                            <Card key = {i} className = {turn === i ? "turn-indicator" : "not-turn"}>
+                                <Card.Header><h3>{opts.playerName[i]}</h3></Card.Header>
+                                <Card.Body>
+                                    <Card.Text><h2>{val}</h2></Card.Text>
+                                </Card.Body>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
                 
             </div>
@@ -173,7 +183,7 @@ function App(props, _children) {
                 ))}
             </div>
             <div className = "row d-flex">
-                <RightToast show = {showRight} onClose = {(e) => setShowRight(false)}/>
+                <RightToast show = {showRight} onClose = {(e) => setShowRight(false)} bonus = {bonus - 1}/>
                 <WrongToast show = {showWrong} onClose = {(e) => setShowWrong(false)}/>
             </div>
             <GameOverModal show = {matchPairCount >= opts.n_pairs} onHide = {(e) => setPlayin(false)} winner_text = {getWinner()}/>
@@ -193,11 +203,11 @@ function GameCard(props, _children){
 }
 
 function RightToast(props, _children){
-    var {show, onClose} = props
+    var {show, onClose, bonus} = props
     return (
         <Toast show = {show} onClose = {onClose}>
-            <Toast.Header> That's a match!! </Toast.Header>
-            <Toast.Body> +5 </Toast.Body>
+            <Toast.Header> <h2>That's a match!!</h2> </Toast.Header>
+            <Toast.Body> <h2><strong>+ {bonus}</strong></h2> </Toast.Body>
         </Toast>
     )
 }
@@ -206,7 +216,7 @@ function WrongToast(props, _children){
     var {show, onClose} = props
     return (
         <Toast show = {show} onClose = {onClose}>
-            <Toast.Header> Nope! </Toast.Header>
+            <Toast.Header> <h2>Nope!</h2>  </Toast.Header>
         </Toast>
     )
 }
@@ -224,11 +234,11 @@ function GameOverModal(props, _children){
                 <Modal.Title>Game Over</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {winner_text}
+                <h1>{winner_text}</h1>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={onHide}>
-                    MainMenu
+                    <h4>MainMenu</h4>
                 </Button>
             </Modal.Footer>
         </Modal>
