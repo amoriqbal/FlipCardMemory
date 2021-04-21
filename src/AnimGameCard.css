@@ -1,0 +1,32 @@
+.playing-card-img {
+  height: 200px;
+  width: 200px;
+}
+
+.card-row {
+  min-height: 250px;
+  min-width: 250px;
+}
+
+
+.example-appear {
+    width: 0px;
+  }
+  .example-appear.example-appear-active {
+    width: 200px;
+    transition: width 0.3s linear;
+  }
+  .example-enter {
+    width: 0px;
+  }
+  .example-enter.example-enter-active {
+    width: 200px;
+    transition: width 0.3s linear;
+  }
+  .example-leave {
+    width: 200px;
+  }
+  .example-leave.example-leave-active {
+    width: 0;
+    transition: width 0.3s linear;
+  }

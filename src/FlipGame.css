@@ -1,14 +1,3 @@
-.playing-card-img{
-    height: 200px;
-    width: 200px;
-}
-
-.card-row{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    
-}
-
 .turn-indicator{
     border-radius: 1rem;
     border-color: darkorange;
